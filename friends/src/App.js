@@ -1,6 +1,5 @@
 import React from 'react';
 import './App.css';
-import uuid from 'uuid';
 import axios from 'axios';
 
 import FriendEditor from './components/FriendEditor';
@@ -55,7 +54,7 @@ export default class App extends React.Component {
 				console.log(res.data);
 			})
 			.catch(err => {
-				console.log(err.statusText);
+				this.setState({ errorMessage: err.response.statusText });
 			})
 			.finally(this.setState({ spinner: false }));
 	};
@@ -76,12 +75,21 @@ export default class App extends React.Component {
 	};
 
 	deleteFriend = id => {
-		this.setState(st => ({
-			friends: st.friends.filter(fr => fr.id !== id),
-			form: this.state.initialFormState,
-			currentFriendId: null
-		}));
+		axios
+			.delete(`http://localhost:5000/friends/${this.state.friends.id}`)
+			.then(this.setState({ friends: this.state.friends.filter(fr => fr.id !== id) }))
+			.catch(err => {
+				this.setState({ errorMessage: err.response.statusText });
+			})
+			.finally(this.setState({ spinner: false }));
 	};
+	// deleteFriend = id => {
+	// 	this.setState(st => ({
+	// 		friends: st.friends.filter(fr => fr.id !== id),
+	// 		form: this.state.initialFormState,
+	// 		currentFriendId: null
+	// 	}));
+	// };
 
 	setFriendToBeEdited = id => {
 		this.setState(state => {
