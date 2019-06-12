@@ -11,29 +11,17 @@ export default function Friend({ friend, deleteFriend, markAsEnemy, setFriendToB
 		deleteFriend(friend.id);
 	};
 
-	const onMarkEnemy = event => {
-		// One liner. Implement using markAsEnemy
-		markAsEnemy(friend.id);
-	};
-
-	const friendStyle = {
-		color: friend.friendly ? 'green' : 'red'
-	};
-
 	return (
 		<div>
-			<span style={friendStyle}>
-				{friend.name} is {friend.age}
+			<span style={{ color: 'green' }}>
+				{friend.name} ({friend.age}) can be reached at{' '}
+				<span style={{ color: 'blue', textDecoration: 'underline' }}>{friend.email}</span>
 			</span>
-
 			<button onClick={onEdit} className="small">
 				Edit
 			</button>
 			<button onClick={onDelete} className="small danger">
 				Delete
-			</button>
-			<button onClick={onMarkEnemy} className="small alert">
-				Mark as Enemy
 			</button>
 		</div>
 	);

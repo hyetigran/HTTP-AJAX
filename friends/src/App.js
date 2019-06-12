@@ -6,21 +6,6 @@ import axios from 'axios';
 import FriendEditor from './components/FriendEditor';
 import Friend from './components/Friend';
 
-const initialFormState = {
-	nameValue: '',
-	ageValue: ''
-};
-
-const initialState = {
-	friends: [
-		{ id: uuid(), name: 'Delba', age: '25', friendly: true },
-		{ id: uuid(), name: 'Maxime', age: '27', friendly: true },
-		{ id: uuid(), name: 'Giacomo', age: '29', friendly: true }
-	],
-	currentFriendId: null,
-	form: initialFormState
-};
-
 export default class App extends React.Component {
 	constructor(props) {
 		super(props);
@@ -30,9 +15,15 @@ export default class App extends React.Component {
 			spinner: false,
 			form: {
 				nameValue: '',
+				emailValue: '',
 				ageValue: ''
 			},
-			currentFriendId: null
+			currentFriendId: null,
+			initialFormState: {
+				nameValue: '',
+				emailValue: '',
+				ageValue: ''
+			}
 		};
 	}
 
@@ -41,14 +32,7 @@ export default class App extends React.Component {
 		axios
 			.get('http://localhost:5000/friends')
 			.then(res => {
-				this.setState({
-					friends: res.data.map(friend => {
-						return {
-							...friend,
-							friendly: true
-						};
-					})
-				});
+				this.setState({ friends: res.data });
 			})
 			.catch(err => {
 				this.setState({ errorMessage: err.response.statusText });
@@ -62,70 +46,44 @@ export default class App extends React.Component {
 			id: this.state.friends.length + 1,
 			name: this.state.form.nameValue,
 			age: this.state.form.ageValue,
-			friendly: true
+			email: this.state.form.emailValue
 		};
 		axios
 			.post('http://localhost:5000/friends', { ...newFriend })
 			.then(res => {
-				console.log(res);
+				this.setState({ friends: res.data });
+				console.log(res.data);
 			})
 			.catch(err => {
 				console.log(err.statusText);
 			})
 			.finally(this.setState({ spinner: false }));
 	};
-	// addFriend = () => {
-	// 	this.setState(state => {
-	// 		if (state.form.nameValue.trim() && state.form.ageValue.trim()) {
-	// 			const newFriend = {
-	// 				id: uuid(),
-	// 				name: this.state.form.nameValue,
-	// 				age: this.state.form.ageValue,
-	// 				friendly: true
-	// 			};
-	// 			return {
-	// 				friends: state.friends.concat(newFriend),
-	// 				form: initialFormState
-	// 			};
-	// 		}
-	// 	});
-	// };
 
 	updateFriend = () => {
-		// using setState:
-		// 1- update an existing friend (the `state.currentFriendId` tells us which)
-		// 2- reset currentFriendId to null
-		// 3- reset the form to its initial state
 		this.setState(state => ({
 			friends: state.friends.map(friend => {
 				if (friend.id === state.currentFriendId) {
 					friend.name = state.form.nameValue;
+					friend.email = state.form.emailValue;
 					friend.age = state.form.ageValue;
 				}
 				return friend;
 			}),
-			form: initialFormState,
+			form: this.state.initialFormState,
 			currentFriendId: null
 		}));
 	};
 
 	deleteFriend = id => {
-		// using setState:
-		// 1- delete an existing friend (the `id` tells us which)
-		// 2- also set currentFriendId to null
-		// 3- reset the form to its initial state
 		this.setState(st => ({
 			friends: st.friends.filter(fr => fr.id !== id),
-			form: initialFormState,
+			form: this.state.initialFormState,
 			currentFriendId: null
 		}));
 	};
 
 	setFriendToBeEdited = id => {
-		// find the friend using the passed `id`
-		// using setState:
-		// 1- set state.currentFriendId to be `id`
-		// 2- populate this.state.form with the name and age of the friend
 		this.setState(state => {
 			const friendToEdit = state.friends.find(friend => friend.id === id);
 
@@ -133,14 +91,14 @@ export default class App extends React.Component {
 				currentFriendId: id,
 				form: {
 					nameValue: friendToEdit.name,
-					ageValue: friendToEdit.age
+					ageValue: friendToEdit.age,
+					emailValue: friendToEdit.email
 				}
 			};
 		});
 	};
 
 	inputChange = (value, field) => {
-		// implement with setState
 		this.setState(state => ({
 			form: {
 				...state.form,
@@ -150,8 +108,6 @@ export default class App extends React.Component {
 	};
 
 	markAsEnemy = id => {
-		// using setState:
-		// add a "friendly" of false to the friend object with the given id
 		this.setState(currentState => ({
 			friends: currentState.friends.map(friend => {
 				if (friend.id === id) {
@@ -194,10 +150,6 @@ export default class App extends React.Component {
 						/>
 					))}
 				</div>
-
-				<button className="alert" onClick={this.wipeOutEnemies}>
-					Wipe Out All Enemies
-				</button>
 			</div>
 		);
 	}
