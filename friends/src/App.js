@@ -47,24 +47,42 @@ export default class App extends React.Component {
 				this.setState({ errorMessage: err.response.statusText });
 			})
 			.finally(this.setState({ spinner: false }));
-	}
-
+  }
+  
 	addFriend = () => {
-		this.setState(state => {
-			if (state.form.nameValue.trim() && state.form.ageValue.trim()) {
-				const newFriend = {
-					id: uuid(),
-					name: this.state.form.nameValue,
-					age: this.state.form.ageValue,
-					friendly: true
-				};
-				return {
-					friends: state.friends.concat(newFriend),
-					form: initialFormState
-				};
-			}
-		});
+		this.setState({ spinner: true });
+		const newFriend = {
+			id: this.state.friends.length + 1,
+			name: this.state.form.nameValue,
+			age: this.state.form.ageValue,
+			friendly: true
+		};
+		axios
+			.post('http://localhost:5000/friends', { ...newFriend })
+			.then(res => {
+				console.log(res);
+			})
+			.catch(err => {
+				console.log(err.statusText);
+			})
+			.finally(this.setState({ spinner: false }));
 	};
+	// addFriend = () => {
+	// 	this.setState(state => {
+	// 		if (state.form.nameValue.trim() && state.form.ageValue.trim()) {
+	// 			const newFriend = {
+	// 				id: uuid(),
+	// 				name: this.state.form.nameValue,
+	// 				age: this.state.form.ageValue,
+	// 				friendly: true
+	// 			};
+	// 			return {
+	// 				friends: state.friends.concat(newFriend),
+	// 				form: initialFormState
+	// 			};
+	// 		}
+	// 	});
+	// };
 
 	updateFriend = () => {
 		// using setState:
