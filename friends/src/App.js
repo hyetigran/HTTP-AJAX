@@ -41,14 +41,21 @@ export default class App extends React.Component {
 		axios
 			.get('http://localhost:5000/friends')
 			.then(res => {
-				this.setState({ friends: res.data });
+				this.setState({
+					friends: res.data.map(friend => {
+						return {
+							...friend,
+							friendly: true
+						};
+					})
+				});
 			})
 			.catch(err => {
 				this.setState({ errorMessage: err.response.statusText });
 			})
 			.finally(this.setState({ spinner: false }));
-  }
-  
+	}
+
 	addFriend = () => {
 		this.setState({ spinner: true });
 		const newFriend = {
