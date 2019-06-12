@@ -27,7 +27,7 @@ export default function FriendEditor({ form, addFriend, updateFriend, isEditing,
 			name:
 			<input type="text" value={form.nameValue} onChange={onNameChange} />
 			age:
-			<input type="text" value={form.ageValue} onChange={onAgeChange} />
+			<input type="number" value={form.ageValue} onChange={onAgeChange} />
 			email:
 			<input type="email" value={form.emailValue} onChange={onEmailChange} />
 			{isEditing ? (

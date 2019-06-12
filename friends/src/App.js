@@ -58,38 +58,48 @@ export default class App extends React.Component {
 			})
 			.finally(this.setState({ spinner: false }));
 	};
-
 	updateFriend = () => {
-		this.setState(state => ({
-			friends: state.friends.map(friend => {
-				if (friend.id === state.currentFriendId) {
-					friend.name = state.form.nameValue;
-					friend.email = state.form.emailValue;
-					friend.age = state.form.ageValue;
-				}
-				return friend;
-			}),
-			form: this.state.initialFormState,
-			currentFriendId: null
-		}));
-	};
-
-	deleteFriend = id => {
 		axios
-			.delete(`http://localhost:5000/friends/${this.state.friends.id}`)
-			.then(this.setState({ friends: this.state.friends.filter(fr => fr.id !== id) }))
+			.put(`http://localhost:5000/friends/${this.state.currentFriendId}`, {
+				name: this.state.form.nameValue,
+				age: this.state.form.ageValue,
+				email: this.state.form.emailValue
+			})
+			.then(
+				this.setState({
+					friends: this.state.friends.map(friend => {
+						if (friend.id === this.state.currentFriendId) {
+							friend.name = this.state.form.nameValue;
+							friend.email = this.state.form.emailValue;
+							friend.age = this.state.form.ageValue;
+						}
+						return friend;
+					}),
+					form: this.state.initialFormState,
+					currentFriendId: null
+				})
+			)
 			.catch(err => {
 				this.setState({ errorMessage: err.response.statusText });
 			})
 			.finally(this.setState({ spinner: false }));
 	};
-	// deleteFriend = id => {
-	// 	this.setState(st => ({
-	// 		friends: st.friends.filter(fr => fr.id !== id),
-	// 		form: this.state.initialFormState,
-	// 		currentFriendId: null
-	// 	}));
-	// };
+
+	deleteFriend = id => {
+		axios
+			.delete(`http://localhost:5000/friends/${this.state.friends.id}`)
+			.then(
+				this.setState({
+					friends: this.state.friends.filter(fr => fr.id !== id),
+					form: this.state.initialFormState,
+					currentFriendId: null
+				})
+			)
+			.catch(err => {
+				this.setState({ errorMessage: err.response.statusText });
+			})
+			.finally(this.setState({ spinner: false }));
+	};
 
 	setFriendToBeEdited = id => {
 		this.setState(state => {
