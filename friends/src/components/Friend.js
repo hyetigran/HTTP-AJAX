@@ -1,26 +1,34 @@
 import React from 'react';
 
-export default function Friend({ friend, deleteFriend, markAsEnemy, setFriendToBeEdited }) {
+export default function Friend(props) {
+	console.log(props);
+	const friend = props.friends.find(friend => friend.id === props.match.params.friendId);
+
 	const onEdit = event => {
-		setFriendToBeEdited(friend.id);
+		props.setFriendToBeEdited(props.friend.id);
 	};
 
 	const onDelete = event => {
-		deleteFriend(friend.id);
+		props.deleteFriend(props.friend.id);
 	};
 
 	return (
-		<div>
-			<span style={{ color: 'green' }}>
-				{friend.name} ({friend.age}) can be reached at{' '}
-				<span style={{ color: 'blue', textDecoration: 'underline' }}>{friend.email}</span>
-			</span>
-			<button onClick={onEdit} className="small">
-				Edit
-			</button>
-			<button onClick={onDelete} className="small danger">
-				Delete
-			</button>
+		<div className="friend-container">
+			{props.friends.map(friend => {
+				return (
+					<div className="friend-card">
+						<span style={{ color: 'green' }}>{friend.name}</span>
+						<div>
+							<button onClick={onEdit} className="small">
+								Edit
+							</button>
+							<button onClick={onDelete} className="small danger">
+								Delete
+							</button>
+						</div>
+					</div>
+				);
+			})}
 		</div>
 	);
 }

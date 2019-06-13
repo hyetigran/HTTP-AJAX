@@ -4,12 +4,14 @@ import axios from 'axios';
 
 import FriendEditor from './components/FriendEditor';
 import Friend from './components/Friend';
+import { BrowserRouter as Router, Route, NavLink } from 'react-router-dom';
+import { link } from 'fs';
 
 export default class App extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			friends: [],
+			friends: [{ id: 1, name: 'timmy', email: 'foobar', age: 20 }],
 			errorMessage: '',
 			spinner: false,
 			form: {
@@ -125,50 +127,65 @@ export default class App extends React.Component {
 		}));
 	};
 
-	markAsEnemy = id => {
-		this.setState(currentState => ({
-			friends: currentState.friends.map(friend => {
-				if (friend.id === id) {
-					friend.friendly = false;
-				}
-				return friend;
-			})
-		}));
-	};
-
-	wipeOutEnemies = () => {
-		// using setState:
-		// wipe the enemies from the friends array
-		this.setState(currentState => ({
-			friends: currentState.friends.filter(friend => friend.friendly)
-		}));
-	};
-
 	render() {
 		return (
-			<div className="container">
-				<FriendEditor
-					form={this.state.form}
-					inputChange={this.inputChange}
-					addFriend={this.addFriend}
-					updateFriend={this.updateFriend}
-					isEditing={!!this.state.currentFriendId}
-				/>
+			<Router>
+				<div className="container">
+					<div className="navbar" style={{ display: 'flex' }}>
+						<li activeClassName="activeNavButton">
+							<NavLink exact to="/">
+								Home
+							</NavLink>
+						</li>
+						<li activeClassName="activeNavButton">
+							<NavLink exact to="/friends">
+								Friends
+							</NavLink>
+						</li>
+						<li activeClassName="activeNavButton">
+							<NavLink exact to="/friendeditor">
+								Friends Editor
+							</NavLink>
+						</li>
+					</div>
+					<Route exact path="/" />
+					<Route
+						exact
+						path="/friends"
+						render={props => (
+							<Friend
+								{...props}
+								friends={this.state.friends}
+								updateFriend={this.updateFriend}
+								deleteFriend={this.deleteFriend}
+							/>
+						)}
+					/>
+					<Route
+						exact
+						path="/friendeditor"
+						render={props => (
+							<FriendEditor
+								form={this.state.form}
+								inputChange={this.inputChange}
+								addFriend={this.addFriend}
+								updateFriend={this.updateFriend}
+								isEditing={!!this.state.currentFriendId}
+							/>
+						)}
+					/>
 
-				<div className="sub-container">
-					<h3>Friends List:</h3>
-					{/* Make it so we get the `No friends! Sad!` h5 if there are no friends */}
-					{this.state.friends.map(friend => (
-						<Friend
-							key={friend.id}
-							friend={friend}
-							deleteFriend={this.deleteFriend}
-							markAsEnemy={this.markAsEnemy}
-							setFriendToBeEdited={this.setFriendToBeEdited}
-						/>
-					))}
+					{/* {this.state.friends.map(friend => (
+                <Friend
+                  key={friend.id}
+                  friend={friend}
+                  deleteFriend={this.deleteFriend}
+                  markAsEnemy={this.markAsEnemy}
+                  setFriendToBeEdited={this.setFriendToBeEdited}
+                />
+            ))} */}
 				</div>
-			</div>
+			</Router>
 		);
 	}
 }
