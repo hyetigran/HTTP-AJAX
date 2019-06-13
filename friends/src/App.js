@@ -3,15 +3,14 @@ import './App.css';
 import axios from 'axios';
 
 import FriendEditor from './components/FriendEditor';
-import Friend from './components/Friend';
+import FriendsPage from './components/FriendsPage';
 import { BrowserRouter as Router, Route, NavLink } from 'react-router-dom';
-import { link } from 'fs';
 
 export default class App extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			friends: [{ id: 1, name: 'timmy', email: 'foobar', age: 20 }],
+			friends: [],
 			errorMessage: '',
 			spinner: false,
 			form: {
@@ -89,7 +88,7 @@ export default class App extends React.Component {
 
 	deleteFriend = id => {
 		axios
-			.delete(`http://localhost:5000/friends/${this.state.friends.id}`)
+			.delete(`http://localhost:5000/friends/${id}`)
 			.then(
 				this.setState({
 					friends: this.state.friends.filter(fr => fr.id !== id),
@@ -143,7 +142,7 @@ export default class App extends React.Component {
 							</NavLink>
 						</li>
 						<li activeClassName="activeNavButton">
-							<NavLink exact to="/friendeditor">
+							<NavLink exact to="/friend-editor">
 								Friends Editor
 							</NavLink>
 						</li>
@@ -153,19 +152,20 @@ export default class App extends React.Component {
 						exact
 						path="/friends"
 						render={props => (
-							<Friend
+							<FriendsPage
 								{...props}
 								friends={this.state.friends}
-								updateFriend={this.updateFriend}
+								setFriendToBeEdited={this.setFriendToBeEdited}
 								deleteFriend={this.deleteFriend}
 							/>
 						)}
 					/>
 					<Route
 						exact
-						path="/friendeditor"
+						path="/friend-editor"
 						render={props => (
 							<FriendEditor
+								{...props}
 								form={this.state.form}
 								inputChange={this.inputChange}
 								addFriend={this.addFriend}
@@ -174,16 +174,6 @@ export default class App extends React.Component {
 							/>
 						)}
 					/>
-
-					{/* {this.state.friends.map(friend => (
-                <Friend
-                  key={friend.id}
-                  friend={friend}
-                  deleteFriend={this.deleteFriend}
-                  markAsEnemy={this.markAsEnemy}
-                  setFriendToBeEdited={this.setFriendToBeEdited}
-                />
-            ))} */}
 				</div>
 			</Router>
 		);
