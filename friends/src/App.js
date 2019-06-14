@@ -23,7 +23,8 @@ export default class App extends React.Component {
 				nameValue: '',
 				emailValue: '',
 				ageValue: ''
-			}
+			},
+			isEditing: false
 		};
 	}
 
@@ -59,13 +60,9 @@ export default class App extends React.Component {
 			})
 			.finally(this.setState({ spinner: false }));
 	};
-	updateFriend = () => {
+	updateFriend = friendToEdit => {
 		axios
-			.put(`http://localhost:5000/friends/${this.state.currentFriendId}`, {
-				name: this.state.form.nameValue,
-				age: this.state.form.ageValue,
-				email: this.state.form.emailValue
-			})
+			.put(`http://localhost:5000/friends/${this.state.currentFriendId}`, friendToEdit)
 			.then(
 				this.setState({
 					friends: this.state.friends.map(friend => {
@@ -77,7 +74,8 @@ export default class App extends React.Component {
 						return friend;
 					}),
 					form: this.state.initialFormState,
-					currentFriendId: null
+					currentFriendId: null,
+					isEditing: false
 				})
 			)
 			.catch(err => {
@@ -112,7 +110,8 @@ export default class App extends React.Component {
 					nameValue: friendToEdit.name,
 					ageValue: friendToEdit.age,
 					emailValue: friendToEdit.email
-				}
+				},
+				isEditing: true
 			};
 		});
 	};
@@ -162,7 +161,7 @@ export default class App extends React.Component {
 					/>
 					<Route
 						exact
-						path="/friend-editor"
+						path="/friend-editor/:id"
 						render={props => (
 							<FriendEditor
 								{...props}
